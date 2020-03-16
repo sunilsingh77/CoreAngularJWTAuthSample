@@ -40,6 +40,11 @@ namespace CoreAngularAppWithJWTAuth
 
             //DB Connection
             services.AddDbContextPool<ApplicationDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultDBConnection")));
+            
+            //Added Swagger service
+            services.AddSwaggerDocument(o => o.Title = "Test Web API");
+
+            services.AddMvc(option => option.EnableEndpointRouting = false);
 
             //Specifying using Identity Framework
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -64,7 +69,6 @@ namespace CoreAngularAppWithJWTAuth
             var secreteKey = Encoding.ASCII.GetBytes(appSettings.Secret);
 
             //Add JWT Authentication
-
             services.AddAuthentication(options =>
             {
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -84,6 +88,13 @@ namespace CoreAngularAppWithJWTAuth
                 };
             });
 
+            //Add Authorization
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequiredLoggedIn", policy => policy.RequireRole("Admin", "Customer", "Moderator").RequireAuthenticatedUser());
+                options.AddPolicy("RequiredAdministratorRole", policy => policy.RequireRole("Admin").RequireAuthenticatedUser());
+            });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -109,9 +120,12 @@ namespace CoreAngularAppWithJWTAuth
             {
                 app.UseSpaStaticFiles();
             }
+            
+            //Swagger documentation
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             app.UseRouting();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -129,6 +143,7 @@ namespace CoreAngularAppWithJWTAuth
                 if (env.IsDevelopment())
                 {
                     spa.UseAngularCliServer(npmScript: "start");
+                    spa.Options.StartupTimeout = TimeSpan.FromSeconds(200);
                 }
             });
         }

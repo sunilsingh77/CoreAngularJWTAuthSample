@@ -1,4 +1,6 @@
+using CoreAngularAppWithJWTAuth.Helpers;
 using CoreAngularAppWithJWTAuth.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -8,7 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Text;
 
 namespace CoreAngularAppWithJWTAuth
 {
@@ -31,10 +35,13 @@ namespace CoreAngularAppWithJWTAuth
                 configuration.RootPath = "ClientApp/dist";
             });
 
+            //Enabled CORS
             services.AddCors();
 
+            //DB Connection
             services.AddDbContextPool<ApplicationDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultDBConnection")));
 
+            //Specifying using Identity Framework
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -48,6 +55,35 @@ namespace CoreAngularAppWithJWTAuth
                 options.Lockout.AllowedForNewUsers = true;
             }).AddEntityFrameworkStores<ApplicationDBContext>()
             .AddDefaultTokenProviders();
+
+            //Configure strongly type setting object
+            var appSettingSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingSection);
+
+            var appSettings = appSettingSection.Get<AppSettings>();
+            var secreteKey = Encoding.ASCII.GetBytes(appSettings.Secret);
+
+            //Add JWT Authentication
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options=> 
+            {
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = appSettings.Site,
+                    ValidAudience = appSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(secreteKey)
+                };
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,9 +101,10 @@ namespace CoreAngularAppWithJWTAuth
             }
 
             app.UseCors();
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseAuthentication();
+
             if (!env.IsDevelopment())
             {
                 app.UseSpaStaticFiles();

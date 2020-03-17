@@ -13,6 +13,7 @@ namespace CoreAngularAppWithJWTAuth.Controllers
     [Route("api/[controller]")]
     [ApiController]
     //[Authorize(Policy = "RequiredLoggedIn")]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
@@ -23,7 +24,8 @@ namespace CoreAngularAppWithJWTAuth.Controllers
         }
 
         // GET: api/Products
-        [HttpGet("[action]")]        
+        [HttpGet("[action]")]
+        [Authorize(Policy = "RequiredLoggedIn")]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
             return await _context.Products.ToListAsync();
@@ -31,6 +33,7 @@ namespace CoreAngularAppWithJWTAuth.Controllers
 
         // GET: api/Products/5
         [HttpGet("[action]/{id}")]
+        [Authorize(Policy = "RequiredLoggedIn")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
@@ -47,7 +50,7 @@ namespace CoreAngularAppWithJWTAuth.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("[action]/{id}")]
-        //[Authorize(Policy = "RequiredAdministratorRole")]
+        [Authorize(Policy = "RequiredAdministratorRole")]
         public async Task<IActionResult> PutProduct(int id, Product product)
         {
             if (id != product.ProductId)
@@ -80,7 +83,7 @@ namespace CoreAngularAppWithJWTAuth.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost("[action]")]
-        //[Authorize(Policy = "RequiredAdministratorRole")]
+        [Authorize(Policy = "RequiredAdministratorRole")]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
             _context.Products.Add(product);
@@ -91,7 +94,7 @@ namespace CoreAngularAppWithJWTAuth.Controllers
 
         // DELETE: api/Products/5
         [HttpDelete("[action]/{id}")]
-        //[Authorize(Policy = "RequiredAdministratorRole")]
+        [Authorize(Policy = "RequiredAdministratorRole")]
         public async Task<ActionResult<Product>> DeleteProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);

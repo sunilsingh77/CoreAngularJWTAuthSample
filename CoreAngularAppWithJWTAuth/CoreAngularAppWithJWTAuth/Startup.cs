@@ -111,7 +111,12 @@ namespace CoreAngularAppWithJWTAuth
                 app.UseHsts();
             }
 
-            app.UseCors();
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseAuthentication();

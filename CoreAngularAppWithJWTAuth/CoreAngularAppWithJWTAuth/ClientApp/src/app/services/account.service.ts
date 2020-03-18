@@ -26,7 +26,7 @@ export class AccountService {
             localStorage.setItem('jwt', result.token);
             localStorage.setItem('username', result.username);
             localStorage.setItem('expiration', result.expiration);
-            localStorage.setItem('userRole', result.UserRole);
+            localStorage.setItem('userRole', result.userrole);
           }
           return result;
         })

@@ -40,9 +40,9 @@ export class LoginComponent implements OnInit {
     this.acct.login(userLogin.Username, userLogin.Password).subscribe(result => {
       const token = (<any>result).token;
       console.log(token);
-      console.log(result.returnUrl);
+      console.log(this.returnUrl);
       console.log('User logged-in successfully!');
-      console.log(result.userRole);
+      console.log(result.userrole);
       this.invalidLogin = false;
       this.router.navigateByUrl(this.returnUrl);
     },

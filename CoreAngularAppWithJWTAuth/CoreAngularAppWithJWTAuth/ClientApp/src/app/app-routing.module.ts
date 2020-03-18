@@ -9,12 +9,14 @@ import { RegisterComponent } from './register/register.component';
 import { ProductsComponent } from './products/products.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, pathMatch: 'full' },
+    { path: '', component: HomeComponent, pathMatch: 'full' },
+    { path: 'home', component: HomeComponent, pathMatch: 'full' },
     { path: 'counter', component: CounterComponent },
     { path: 'fetch-data', component: FetchDataComponent },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
-    { path: 'products', component: ProductsComponent }
+    { path: 'products', component: ProductsComponent },
+    { path: '**', redirectTo: '/home' }
 ];
 
 @NgModule({

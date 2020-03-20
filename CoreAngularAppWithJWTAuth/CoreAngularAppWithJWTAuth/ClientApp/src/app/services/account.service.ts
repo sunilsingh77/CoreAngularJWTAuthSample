@@ -39,6 +39,8 @@ export class AccountService {
             localStorage.setItem('username', result.username);
             localStorage.setItem('expiration', result.expiration);
             localStorage.setItem('userRole', result.userrole);
+            this.UserName.next(localStorage.getItem('username'));
+            this.UserRole.next(localStorage.getItem('userRole'));
           }
           return result;
         })
@@ -58,6 +60,11 @@ export class AccountService {
   }
 
   checkLoginStatus(): boolean {
+    var loginCookie = localStorage.getItem("loginStatus");
+
+    if (loginCookie == "1") {
+      return true;
+    }
     return false;
   }
 

@@ -1,3 +1,4 @@
+using CoreAngularAppWithJWTAuth.Extensions;
 using CoreAngularAppWithJWTAuth.Helpers;
 using CoreAngularAppWithJWTAuth.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,6 +30,10 @@ namespace CoreAngularAppWithJWTAuth
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            
+            // Email Sending Service
+            services.AddSendGridEmailSender();
+
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {

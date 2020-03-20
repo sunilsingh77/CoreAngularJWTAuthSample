@@ -82,7 +82,7 @@ namespace CoreAngularAppWithJWTAuth.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost("[action]")]
-        //[Authorize(Policy = "RequiredAdministratorRole")]
+        [Authorize(Policy = "RequiredAdministratorRole")]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
             _context.Products.Add(product);

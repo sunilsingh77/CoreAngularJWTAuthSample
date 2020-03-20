@@ -6,7 +6,7 @@ import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
-import { ProductsComponent } from './products/products.component';
+
 
 const routes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -15,7 +15,7 @@ const routes: Routes = [
     { path: 'fetch-data', component: FetchDataComponent },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
-    { path: 'products', component: ProductsComponent },
+    { path: 'products', loadChildren: './products/products.module#ProductsModule' },
     { path: '**', redirectTo: '/home' } 
 ];
 

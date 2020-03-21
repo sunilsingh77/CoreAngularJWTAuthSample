@@ -10,7 +10,7 @@ import { take, map } from 'rxjs/operators';
 export class AuthGuardService implements CanActivate {
 
   constructor(private acct: AccountService, private router: Router) { }
-  debugger;
+
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.acct.isLoggedIn.pipe(take(1), map((loginStatus: boolean) => {
       const destination: string = state.url;

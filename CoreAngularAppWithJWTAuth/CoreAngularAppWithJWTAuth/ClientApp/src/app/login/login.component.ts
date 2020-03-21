@@ -28,7 +28,12 @@ export class LoginComponent implements OnInit {
 
     // get return URL or /
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-
+    
+    if (localStorage.getItem('jwt') !== null || localStorage.getItem('jwt') !== undefined) {
+      this.router.navigate(['/']);
+      return false;
+    }
+    
     // Intialize formGroup by using FormBuilder
     this.insertForm = this.fb.group({
       'Username': this.Username,

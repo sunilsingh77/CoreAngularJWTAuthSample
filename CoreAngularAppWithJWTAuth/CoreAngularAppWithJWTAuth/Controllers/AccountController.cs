@@ -56,12 +56,11 @@ namespace CoreAngularAppWithJWTAuth.Controllers
                 await _userManager.AddToRoleAsync(user, "Customer");
 
                 // Sending Confirmation Email
-
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
                 var callbackUrl = Url.Action("ConfirmEmail", "Account", new { UserId = user.Id, Code = code }, protocol: HttpContext.Request.Scheme);
 
-                await _emailsender.SendEmailAsync(user.Email, "Techhowdy.com - Confirm Your Email", "Please confirm your e-mail by clicking this link: <a href=\"" + callbackUrl + "\">click here</a>");
+                await _emailsender.SendEmailAsync(user.Email, "http://diarsotechnologies.com/ - Confirm Your Email", "Please confirm your e-mail by clicking this link: <a href=\"" + callbackUrl + "\">click here</a>");
 
                 return Ok(new { userName = user.UserName, email = user.Email, status = 1, message = "Register Successful" });
             }

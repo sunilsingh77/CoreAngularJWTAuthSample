@@ -6,13 +6,14 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { AccessDeniedComponent } from './errors/access-denied/access-denied.component';
+import { AuthGuardService } from './guards/auth-guard.service';
 
 
 const routes: Routes = [
     { path: 'home', component: HomeComponent},
     { path: '', component: HomeComponent, pathMatch: 'full'},
-    { path: 'counter', component: CounterComponent },
-    { path: 'fetch-data', component: FetchDataComponent },
+    { path: 'counter', component: CounterComponent},
+    { path: 'fetch-data', component: FetchDataComponent},
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'access-denied', component: AccessDeniedComponent },

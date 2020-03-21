@@ -30,13 +30,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
   _imageUrl: FormControl;
   _id: FormControl;
 
-
   // Add Modal
   @ViewChild('template', { static: false }) modal: TemplateRef<any>;
 
   // Update Modal
   @ViewChild('editTemplate', { static: false }) editmodal: TemplateRef<any>;
-
 
   // Modal properties
   modalMessage: string;
@@ -46,15 +44,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
   products: Product[] = [];
   userRoleStatus: string;
 
-
   // Datatables Properties
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject();
 
-  @ViewChild(DataTableDirective, {static: false}) dtElement: DataTableDirective;
-
-
-
+  @ViewChild(DataTableDirective, { static: false }) dtElement: DataTableDirective;
 
   constructor(private productservice: ProductService,
     private modalService: BsModalService,
@@ -85,16 +79,12 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
         });
         console.log('New Product added');
-
       },
       error => console.log('Could not add Product')
-
-    );
-
+    )
   }
 
   // We will use this method to destroy old table and re-render new table
-
   rerender() {
     this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
       // Destroy the table first in the current context
@@ -126,7 +116,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   // Load the update Modal
-
   onUpdateModal(productEdit: Product): void {
     this._id.setValue(productEdit.productId);
     this._name.setValue(productEdit.name);
@@ -224,10 +213,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
         'description': this._description,
         'imageUrl': this._imageUrl,
         'outOfStock': true
-
       });
-
-
   }
 
   ngOnDestroy() {

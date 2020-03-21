@@ -22,13 +22,14 @@ export class NavMenuComponent implements OnInit {
   toggle() {
     this.isExpanded = !this.isExpanded;
   }
-  onLogout() {
-    this.productservice.clearCache();
-    this.acct.logout();
-  }
 
   ngOnInit() {
     this.LoginStatus$ = this.acct.isLoggedIn;
     this.UserName$ = this.acct.currentUserName;
+  }
+
+  onLogout() {
+    this.productservice.clearCache();
+    this.acct.logout();
   }
 }

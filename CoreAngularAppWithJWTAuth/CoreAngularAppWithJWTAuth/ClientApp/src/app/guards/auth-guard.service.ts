@@ -16,14 +16,13 @@ export class AuthGuardService implements CanActivate {
       const destination: string = state.url;
       const productId = route.params.id;
 
-
       // To check if user is not logged in
       if (!loginStatus) {
         this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
 
         return false;
       }
-
+      
       // if the user is already logged in
       switch (destination) {
         case '/products':
@@ -44,8 +43,17 @@ export class AuthGuardService implements CanActivate {
 
               return true;
             }
+        }
+        //case '/register':
+        //case '/login': {
+        //  if (localStorage.getItem('loginStatus') === '1') {
+        //    if (localStorage.getItem('jwt') === null || localStorage.getItem('jwt') === undefined) {
+        //      this.router.navigate(['/home']);
+        //      return false;
+        //    }
+        //  }
+        //}
 
-          }
         // tslint:disable-next-line:no-switch-case-fall-through
         default:
           return false;

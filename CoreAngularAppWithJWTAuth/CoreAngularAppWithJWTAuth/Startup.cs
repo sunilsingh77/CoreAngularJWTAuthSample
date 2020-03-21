@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,7 @@ namespace CoreAngularAppWithJWTAuth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddControllersWithViews();
             
             // Email Sending Service
@@ -40,8 +42,12 @@ namespace CoreAngularAppWithJWTAuth
                 configuration.RootPath = "ClientApp/dist";
             });
 
-            //Enabled CORS
-            services.AddCors();
+            // Enable CORS
+            // ...
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder => builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().Build());
+            });
 
             //DB Connection
             services.AddDbContextPool<ApplicationDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultDBConnection")));
@@ -71,25 +77,24 @@ namespace CoreAngularAppWithJWTAuth
             services.Configure<AppSettings>(appSettingSection);
 
             var appSettings = appSettingSection.Get<AppSettings>();
-            var secreteKey = Encoding.ASCII.GetBytes(appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
 
             //Add JWT Authentication
             services.AddAuthentication(options =>
             {
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options=> 
             {
-                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidateIssuerSigningKey = true,
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
                     ValidIssuer = appSettings.Site,
                     ValidAudience = appSettings.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(secreteKey)
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
             });
 
@@ -99,7 +104,13 @@ namespace CoreAngularAppWithJWTAuth
                 options.AddPolicy("RequiredLoggedIn", policy => policy.RequireRole("Admin", "Customer", "Moderator").RequireAuthenticatedUser());
                 options.AddPolicy("RequiredAdministratorRole", policy => policy.RequireRole("Admin").RequireAuthenticatedUser());
             });
-            
+
+            /*
+             Requirement: 
+             User should be Authenticated
+             User Must be Authorized.
+             In Order to view products (GetAllProducts).
+            */
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -116,26 +127,24 @@ namespace CoreAngularAppWithJWTAuth
                 app.UseHsts();
             }
 
-            // global cors policy
-            app.UseCors(x => x
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+            app.UseCors();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseSpaStaticFiles();
             app.UseAuthentication();
-
-            if (!env.IsDevelopment())
-            {
-                app.UseSpaStaticFiles();
-            }
+            
+            //if (!env.IsDevelopment())
+            //{
+            //    app.UseSpaStaticFiles();
+            //}
             
             //Swagger documentation
             app.UseOpenApi();
             app.UseSwaggerUi3();
 
             app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -152,8 +161,8 @@ namespace CoreAngularAppWithJWTAuth
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseAngularCliServer(npmScript: "start");
                     spa.Options.StartupTimeout = TimeSpan.FromSeconds(200);
+                    spa.UseAngularCliServer(npmScript: "start");
                 }
             });
         }

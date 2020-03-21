@@ -82,6 +82,7 @@ namespace CoreAngularAppWithJWTAuth.Controllers
         {
             var user = await _userManager.FindByNameAsync(model.UserName);            
             var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appSettings.Secret));
+            double tokenExpiryTime = Convert.ToDouble(_appSettings.ExpireTime);
 
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
@@ -98,23 +99,21 @@ namespace CoreAngularAppWithJWTAuth.Controllers
 
                 var tokenHandler = new JwtSecurityTokenHandler();
 
-                var claims = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, model.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Role, roles.FirstOrDefault()),
-                    new Claim("LoggedOn", DateTime.Now.ToString())
-                });
-
-
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    Subject = claims,
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim(JwtRegisteredClaimNames.Sub, model.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id),
+                        new Claim(ClaimTypes.Role, roles.FirstOrDefault()),
+                        new Claim("LoggedOn", DateTime.Now.ToString()),
+
+                     }),
                     SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature),
                     Issuer = _appSettings.Site,
                     Audience = _appSettings.Audience,
-                    Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_appSettings.ExpireTime))
+                    Expires = DateTime.UtcNow.AddMinutes(tokenExpiryTime)
                 };
 
                 var token = tokenHandler.CreateToken(tokenDescriptor);

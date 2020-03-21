@@ -84,12 +84,12 @@ export class ProductListComponent implements OnInit, OnDestroy {
           this.rerender();
 
         });
-        console.log("New Product added");
+        console.log('New Product added');
 
       },
       error => console.log('Could not add Product')
 
-    )
+    );
 
   }
 
@@ -163,7 +163,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   onSelect(product: Product): void {
     this.selectedProduct = product;
 
-    this.router.navigateByUrl("/products/" + product.productId);
+    this.router.navigateByUrl('/products/' + product.productId);
   }
 
   ngOnInit() {
@@ -188,7 +188,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
 
     // Modal Message
-    this.modalMessage = "All Fields Are Mandatory";
+    this.modalMessage = 'All Fields Are Mandatory';
 
     // Initializing Add product properties
 

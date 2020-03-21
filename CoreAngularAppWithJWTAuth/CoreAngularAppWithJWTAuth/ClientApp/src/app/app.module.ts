@@ -13,6 +13,9 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { AccessDeniedComponent } from './errors/access-denied/access-denied.component';
+import { AuthGuardService } from './guards/auth-guard.service';
+import { JwtIntercepterService } from './helpers/jwt.intercepter.service';
 
 
 @NgModule({
@@ -23,7 +26,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     CounterComponent,
     FetchDataComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    AccessDeniedComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -33,7 +37,10 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     AppRoutingModule,
     ModalModule.forRoot(),
   ],
-  providers: [],
+  providers: [
+    AuthGuardService,
+    {provide: HTTP_INTERCEPTORS, useClass: JwtIntercepterService, multi: true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

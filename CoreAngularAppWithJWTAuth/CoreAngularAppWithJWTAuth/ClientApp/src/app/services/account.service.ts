@@ -60,9 +60,12 @@ export class AccountService {
   }
 
   checkLoginStatus(): boolean {
-    var loginCookie = localStorage.getItem("loginStatus");
+    const loginCookie = localStorage.getItem('loginStatus');
 
-    if (loginCookie == "1") {
+    if (loginCookie === '1') {
+      if (localStorage.getItem('jwt') === null || localStorage.getItem('jwt') === undefined) {
+          return false;
+      }
       return true;
     }
     return false;
